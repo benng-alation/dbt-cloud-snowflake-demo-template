@@ -176,7 +176,7 @@ metrics:
   - name: revenue
     label: Revenue
     model: ref('fct_orders')
-    description: "Total revenue from orders in the specified time period"
+    description: "Total revenue from orders in the specified time period - v1"
     
     type: sum
     sql: net_item_sales_amount
@@ -186,3 +186,73 @@ metrics:
 
     dimensions: 
       - priority_code
+
+    filters:
+          - field: ship_priority
+            operator: 'is'
+            value: 'true'
+          - field: item_tax_amount
+            operator: '>='
+            value: '100'
+          - field: status_code
+            operator: '!='
+            value: "'Cancelled'"
+          - field: order_date
+            operator: '>='
+            value: "'2020-01-01'"
+
+  - name: revenue2
+    label: Revenue2
+    model: ref('fct_orders')
+    description: "Total revenue from orders in the specified time period - v2"
+    
+    type: sum
+    sql: net_item_sales_amount
+
+    timestamp: order_date
+    time_grains: [day, week, month, quarter, year]
+
+    dimensions: 
+      - priority_code
+
+    filters:
+          - field: ship_priority
+            operator: 'is'
+            value: 'true'
+          - field: item_tax_amount
+            operator: '>='
+            value: '100'
+          - field: status_code
+            operator: '!='
+            value: "'Cancelled'"
+          - field: order_date
+            operator: '>='
+            value: "'2020-01-01'"
+
+  - name: revenue_total
+    label: Revenue Total
+    description: "Expression Metric"
+    
+    type: expression
+    sql: "{{metric('revenue')}} / 12345"
+
+    timestamp: order_date
+    time_grains: [day, week, month, quarter, year]
+
+    dimensions: 
+      - priority_code
+
+    filters:
+          - field: ship_priority
+            operator: 'is'
+            value: 'true'
+          - field: item_tax_amount
+            operator: '>='
+            value: '100'
+          - field: status_code
+            operator: '!='
+            value: "'Cancelled'"
+          - field: order_date
+            operator: '>='
+            value: "'2020-01-01'"
+
